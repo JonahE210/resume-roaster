@@ -9,19 +9,58 @@ from __future__ import annotations
 from app.schemas.primitives import BBox, Word
 
 
+def _chars_to_words(
+    chars: list[dict], *, font_size: float, bold: bool, page: int
+) -> list[Word]:
+    """Assemble Words from a rawdict span's per-character boxes.
+
+    Pure helper (plain dicts/tuples, no fitz): accumulate consecutive
+    non-whitespace chars and flush a Word on whitespace or end-of-span. Each
+    Word's bbox is the union of its char bboxes; text is the joined chars.
+    Empty/whitespace-only accumulations are skipped.
+    """
+    words: list[Word] = []
+    buf: list[dict] = []
+
+    def flush() -> None:
+        if not buf:
+            return
+        text = "".join(c["c"] for c in buf)
+        if text.strip():
+            x0 = min(c["bbox"][0] for c in buf)
+            y0 = min(c["bbox"][1] for c in buf)
+            x1 = max(c["bbox"][2] for c in buf)
+            y1 = max(c["bbox"][3] for c in buf)
+            words.append(
+                Word(
+                    text=text,
+                    bbox=BBox(x0=x0, y0=y0, x1=x1, y1=y1),
+                    page=page,
+                    font_size=font_size,
+                    bold=bold,
+                )
+            )
+        buf.clear()
+
+    for ch in chars:
+        if ch["c"].isspace():
+            flush()
+        else:
+            buf.append(ch)
+    flush()
+    return words
+
+
 def extract_words(pdf_bytes: bytes) -> tuple[list[Word], int]:
     """Extract every word with its bbox and font signals.
 
     Returns (words, page_count).
 
-    Implementation notes for Phase 1:
-      - Use `fitz.open(stream=pdf_bytes, filetype="pdf")`.
-      - `page.get_text("words")` gives (x0, y0, x1, y1, word, block, line, word_no).
-        Fast, but no font size/weight.
-      - For font_size/bold, use `page.get_text("dict")` spans and match by bbox,
-        OR parse spans directly into Words. Font size is a strong section-header
-        signal, so it's worth getting.
-      - Set page index (1-based) on each Word.
+    Uses "rawdict" extraction so each span exposes per-character bboxes; words are
+    assembled by unioning consecutive non-whitespace char boxes (see
+    ``_chars_to_words``). This preserves the true horizontal gaps the downstream
+    right-aligned-run detector relies on. Font signals (font_size, bold) come from
+    the span and propagate to every word built from it. Page index is 1-based.
     """
     import fitz  # PyMuPDF — imported lazily so tests can stub this module
 
@@ -30,16 +69,25 @@ def extract_words(pdf_bytes: bytes) -> tuple[list[Word], int]:
     page_count = doc.page_count
     for page_index in range(page_count):
         page = doc[page_index]
-        # TODO(phase1): switch to "dict" extraction to capture font_size/bold.
-        for x0, y0, x1, y1, text, *_ in page.get_text("words"):
-            if not text.strip():
-                continue
-            words.append(
-                Word(
-                    text=text,
-                    bbox=BBox(x0=x0, y0=y0, x1=x1, y1=y1),
-                    page=page_index + 1,
-                )
-            )
+        data = page.get_text("rawdict")
+        for block in data.get("blocks", []):
+            # Image blocks have no "lines"; skip them.
+            for line in block.get("lines", []):
+                for span in line.get("spans", []):
+                    chars = span.get("chars")
+                    if not chars:
+                        continue
+                    font_size = float(span.get("size", 0.0))
+                    flags = span.get("flags", 0)
+                    font = span.get("font", "")
+                    bold = bool(flags & 2**4) or "bold" in font.lower()
+                    words.extend(
+                        _chars_to_words(
+                            chars,
+                            font_size=font_size,
+                            bold=bold,
+                            page=page_index + 1,
+                        )
+                    )
     doc.close()
     return words, page_count
