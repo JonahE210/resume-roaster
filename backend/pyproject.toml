@@ -1,0 +1,28 @@
+[project]
+name = "resume-intel-backend"
+version = "0.1.0"
+description = "Layout-aware resume parser + analysis API"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "python-multipart>=0.0.9",   # file uploads
+    "pymupdf>=1.24",             # PDF word + bbox extraction
+    "pydantic>=2.6",
+    "pydantic-settings>=2.2",
+    "openai>=1.30",              # swap for any LLM provider
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+    "mypy>=1.10",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

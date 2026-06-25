@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Env / secrets
+.env
+.env.local
+*.local
+
+# Node / Next
+node_modules/
+.next/
+out/
+dist/
+
+# Eval — keep structure & labels, ignore bulky/private PDFs by default
+# (commit a few anonymized samples; keep private ones out)
+eval/samples/*.pdf
+!eval/samples/.gitkeep
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

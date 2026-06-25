@@ -1,0 +1,33 @@
+{
+  "_comment": "Ground truth for one resume. Filename must match its sample, e.g. labels/001.json <-> samples/001.pdf",
+  "contact": {
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "github": "github.com/janedoe"
+  },
+  "sections": [
+    {
+      "type": "experience",
+      "entries": [
+        {
+          "title": "Software Engineering Intern",
+          "organization": "FileByte LLC",
+          "location": "Los Angeles, CA",
+          "start_date": "May 2025",
+          "end_date": "Aug 2025",
+          "bullets": [
+            "Built reusable React components for the client dashboard",
+            "Integrated backend API endpoints"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "skills",
+      "skills": {
+        "languages": ["Python", "Java", "TypeScript"],
+        "frameworks": ["React", "FastAPI"]
+      }
+    }
+  ]
+}
