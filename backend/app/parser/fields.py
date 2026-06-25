@@ -7,6 +7,12 @@ from __future__ import annotations
 
 import re
 
+from app.schemas.primitives import Line
+
+# Split skill VALUE lists on , ; | always, and on "/" only when space-delimited
+# (so "React / Node" splits but "CI/CD", "TCP/IP", "A/B" stay intact).
+SKILL_SPLIT = re.compile(r"[,;|]|\s+/\s+")
+
 # Matches: "May 2025 - Aug 2025", "2024 - Present", "Jan 2024 – May 2024",
 # "Summer 2025", "2024".
 DATE_RANGE = re.compile(
@@ -46,3 +52,30 @@ def find_contact(text: str) -> dict[str, str | None]:
         "linkedin": first(LINKEDIN),
         "github": first(GITHUB),
     }
+
+
+def parse_skills(lines: list[Line]) -> dict[str, list[str]]:
+    """Parse a skills section's lines into a label -> values mapping.
+
+    "Languages: Java, Python"        -> {"languages": ["Java", "Python"]}
+    "Tools / Frameworks: React; Node" -> {"tools / frameworks": ["React", "Node"]}
+    A line with no colon contributes its split tokens under the "general" key.
+    Duplicate labels merge (values are extended).
+    """
+    result: dict[str, list[str]] = {}
+    for line in lines:
+        text = line.text.strip()
+        if not text:
+            continue
+        if ":" in text:
+            label, rest = text.split(":", 1)  # split on the FIRST colon only
+            key = label.strip().lower()
+            values = [t.strip() for t in SKILL_SPLIT.split(rest) if t.strip()]
+        else:
+            key = "general"
+            values = [t.strip() for t in SKILL_SPLIT.split(text) if t.strip()]
+        if key in result:
+            result[key].extend(values)
+        else:
+            result[key] = values
+    return result
