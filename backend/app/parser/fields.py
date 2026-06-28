@@ -14,18 +14,24 @@ from app.schemas.primitives import Line
 SKILL_SPLIT = re.compile(r"[,;|]|\s+/\s+")
 
 # Matches: "May 2025 - Aug 2025", "2024 - Present", "Jan 2024 – May 2024",
-# "Summer 2025", "2024".
+# "Summer 2025", "2024". The year is bounded to 19xx/20xx so stray 4-digit
+# numbers (counts, IDs, versions) in a title don't parse as a date.
+YEAR = r"(?:19|20)\d{2}"
 DATE_RANGE = re.compile(
-    r"(?P<start>(?:[A-Z][a-z]+\.?\s+)?(?:Summer\s+|Fall\s+|Spring\s+|Winter\s+)?\d{4})"
-    r"\s*(?:[-–—to]+\s*)?"
-    r"(?P<end>(?:[A-Z][a-z]+\.?\s+)?\d{4}|Present|Current|Now)?",
+    rf"(?P<start>(?:[A-Z][a-z]+\.?\s+)?(?:Summer\s+|Fall\s+|Spring\s+|Winter\s+)?{YEAR})"
+    r"\s*(?:[-–—]+\s*|to\s+)?"
+    rf"(?P<end>(?:[A-Z][a-z]+\.?\s+)?{YEAR}|Present|Current|Now)?",
 )
 EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
 PHONE = re.compile(r"(?:\+?\d[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}")
 LINKEDIN = re.compile(r"(?:https?://)?(?:www\.)?linkedin\.com/in/[\w-]+", re.I)
 GITHUB = re.compile(r"(?:https?://)?(?:www\.)?github\.com/[\w-]+", re.I)
-# City, ST  or  "Remote"
-LOCATION = re.compile(r"\b([A-Z][a-zA-Z.\s]+,\s*[A-Z]{2})\b|\bRemote\b")
+# City, ST  or  "Remote". The city is at most three Title-case words, each a
+# self-contained token (no spaces *inside* a word), so the match can't run
+# backwards and swallow preceding org/title text up to the state code.
+LOCATION = re.compile(
+    r"\b(?:[A-Z][a-zA-Z.]+\s){0,2}[A-Z][a-zA-Z.]+,\s*[A-Z]{2}\b|\bRemote\b"
+)
 
 
 def find_date_range(text: str) -> tuple[str | None, str | None]:

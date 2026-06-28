@@ -1,0 +1,40 @@
+{
+  "contact": {
+    "name": "Grace Liu",
+    "email": "grace.liu@corp.com",
+    "linkedin": "linkedin.com/in/graceliu"
+  },
+  "sections": [
+    {
+      "type": "experience",
+      "entries": [
+        {
+          "title": "Senior Software Engineer",
+          "organization": "Quanta",
+          "location": "New York, NY",
+          "start_date": "Apr 2019",
+          "end_date": "Present",
+          "bullets": [
+            "Architected a multi-tenant event pipeline processing billions of messages per day with exactly-once semantics",
+            "Reduced infra cost by 30 percent via autoscaling"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "skills",
+      "skills": {
+        "languages": [
+          "Java",
+          "Scala",
+          "Python"
+        ],
+        "tools": [
+          "Kafka",
+          "Spark",
+          "AWS"
+        ]
+      }
+    }
+  ]
+}

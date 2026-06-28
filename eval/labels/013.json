@@ -1,0 +1,33 @@
+{
+  "contact": {
+    "name": "Maya Brooks",
+    "email": "maya@brooks.io",
+    "github": "github.com/mbrooks"
+  },
+  "sections": [
+    {
+      "type": "experience",
+      "entries": [
+        {
+          "title": "Site Reliability Engineer",
+          "organization": "Northwind",
+          "location": "San Diego, CA",
+          "start_date": "Jun 2022",
+          "end_date": "Aug 2024",
+          "bullets": [
+            "Ran the on-call rotation and cut paging volume by half"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "skills",
+      "skills": {
+        "languages": [
+          "Python",
+          "Bash"
+        ]
+      }
+    }
+  ]
+}

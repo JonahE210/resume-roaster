@@ -1,0 +1,34 @@
+{
+  "contact": {
+    "name": "Wei Chen",
+    "email": "wei.chen@corp.com",
+    "github": "github.com/weichen"
+  },
+  "sections": [
+    {
+      "type": "experience",
+      "entries": [
+        {
+          "title": "Frontend Engineer",
+          "organization": "Pixelworks",
+          "location": "Remote",
+          "start_date": "Mar 2023",
+          "end_date": "Present",
+          "bullets": [
+            "Rebuilt the design system in TypeScript and Storybook",
+            "Improved Lighthouse performance score to 98"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "skills",
+      "skills": {
+        "languages": [
+          "TypeScript",
+          "CSS"
+        ]
+      }
+    }
+  ]
+}

@@ -15,7 +15,7 @@ from __future__ import annotations
 from app.parser.lines import detect_right_aligned_run
 from app.schemas.primitives import Line
 
-BULLET_MARKERS = ("•", "-", "*", "▪", "◦", "·", "–")
+BULLET_MARKERS = ("•", "-", "*", "▪", "◦", "·", "–", "»", "›", "▸", "‣", "▹", "■")
 INDENT_TOL = 3.0
 
 

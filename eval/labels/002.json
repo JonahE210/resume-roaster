@@ -1,0 +1,49 @@
+{
+  "contact": {
+    "name": "Alan Park",
+    "email": "alan.park@mail.com",
+    "github": "github.com/alanp"
+  },
+  "sections": [
+    {
+      "type": "experience",
+      "entries": [
+        {
+          "title": "Backend Engineer",
+          "organization": "Cloudly",
+          "start_date": "Jan 2023",
+          "end_date": "Present",
+          "bullets": [
+            "Designed a sharded Postgres schema serving 2M daily requests",
+            "Cut p99 latency by 40 percent through query batching"
+          ]
+        },
+        {
+          "title": "Software Developer",
+          "organization": "Initech",
+          "start_date": "Jun 2020",
+          "end_date": "Dec 2022",
+          "bullets": [
+            "Shipped a billing microservice in Go",
+            "Mentored two junior engineers"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "skills",
+      "skills": {
+        "languages": [
+          "Go",
+          "Python",
+          "SQL"
+        ],
+        "tools": [
+          "Docker",
+          "Kubernetes",
+          "AWS"
+        ]
+      }
+    }
+  ]
+}

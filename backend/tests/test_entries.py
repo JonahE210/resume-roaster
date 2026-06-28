@@ -40,9 +40,43 @@ def test_bold_dated_second_job_still_splits(bold_two_jobs_section_lines):
     assert result[1].bullets == ["Other work"]
 
 
-def test_right_aligned_location_mis_splits_entry(location_vs_date_section_lines):
-    # KNOWN ISSUE (Phase 2 watch-item): a right-aligned location on the org line
-    # trips the date-run boundary -> spurious entry. Expected 1 entry once the
-    # 2<->3 loop fixes location-vs-date; update this assertion when fixed.
+def test_inline_header_title_excludes_org_and_dates():
+    # "Title | Org | Dates" packed on one line (no right-aligned run). The title
+    # must be just the role, so bullets attribute to the right entry key.
+    from app.schemas.primitives import BBox, Line, Word
+
+    def W(text: str, x: float) -> Word:
+        return Word(text=text, bbox=BBox(x0=x, y0=100, x1=x + len(text) * 6, y1=110), page=1)
+
+    # uniform small gaps -> no right-aligned date run
+    toks = ["Software", "Engineer", "|", "Acme", "Corp", "|", "2021", "-", "2023"]
+    words, x = [], 72.0
+    for t in toks:
+        words.append(W(t, x))
+        x += len(t) * 6 + 6
+    header = Line(words=words, page=1)
+    bullet = Line(
+        words=[
+            Word(text="•", bbox=BBox(x0=96, y0=115, x1=102, y1=125), page=1),
+            Word(text="Shipped", bbox=BBox(x0=108, y0=115, x1=150, y1=125), page=1),
+            Word(text="it", bbox=BBox(x0=156, y0=115, x1=168, y1=125), page=1),
+        ],
+        page=1,
+    )
+    result = group_entries([header, bullet])
+    assert len(result) == 1
+    assert result[0].title == "Software Engineer"
+    assert result[0].bullets == ["Shipped it"]
+
+
+def test_right_aligned_location_stays_one_entry(location_vs_date_section_lines):
+    # A right-aligned LOCATION on the org line must NOT trip the date-run
+    # boundary: only a right-aligned DATE run opens a new entry. The org line
+    # stays a secondary line, and its location/org are extracted cleanly.
     result = group_entries(location_vs_date_section_lines)
-    assert len(result) == 2  # buggy-but-current; should become 1 after the fix
+    assert len(result) == 1
+    entry = result[0]
+    assert entry.title == "Software Engineer"
+    assert entry.organization == "Google"
+    assert entry.location == "Mountain View, CA"
+    assert len(entry.bullets) == 2

@@ -1,0 +1,34 @@
+{
+  "contact": {
+    "name": "Ruth Adler",
+    "email": "ruth.adler@inbox.com",
+    "github": "github.com/radler"
+  },
+  "sections": [
+    {
+      "type": "experience",
+      "entries": [
+        {
+          "title": "Data Engineer",
+          "organization": "Streamline",
+          "location": "Portland, OR",
+          "start_date": "Jan 2022",
+          "end_date": "Present",
+          "bullets": [
+            "Built batch ETL jobs over a petabyte-scale warehouse"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "skills",
+      "skills": {
+        "languages": [
+          "Python",
+          "SQL",
+          "Scala"
+        ]
+      }
+    }
+  ]
+}

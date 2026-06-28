@@ -1,0 +1,45 @@
+{
+  "contact": {
+    "name": "Sofia Reyes",
+    "email": "sofia.reyes@inbox.com",
+    "github": "github.com/sreyes"
+  },
+  "sections": [
+    {
+      "type": "experience",
+      "entries": [
+        {
+          "title": "Platform Engineer",
+          "organization": "DataForge",
+          "location": "Seattle, WA",
+          "start_date": "Feb 2023",
+          "end_date": "Present",
+          "bullets": [
+            "Owned the CI/CD pipeline migration to GitHub Actions"
+          ]
+        },
+        {
+          "title": "DevOps Intern",
+          "organization": "Nimbus",
+          "location": "Denver, CO",
+          "start_date": "Jun 2022",
+          "end_date": "Dec 2022",
+          "bullets": [
+            "Automated infrastructure provisioning with Terraform"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "projects",
+      "entries": [
+        {
+          "title": "kubelite",
+          "bullets": [
+            "A minimal container scheduler written in Go"
+          ]
+        }
+      ]
+    }
+  ]
+}
