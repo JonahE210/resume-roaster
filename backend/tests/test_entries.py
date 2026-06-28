@@ -38,3 +38,11 @@ def test_bold_dated_second_job_still_splits(bold_two_jobs_section_lines):
     assert len(result) == 2
     assert result[0].bullets == ["Did stuff"]
     assert result[1].bullets == ["Other work"]
+
+
+def test_right_aligned_location_mis_splits_entry(location_vs_date_section_lines):
+    # KNOWN ISSUE (Phase 2 watch-item): a right-aligned location on the org line
+    # trips the date-run boundary -> spurious entry. Expected 1 entry once the
+    # 2<->3 loop fixes location-vs-date; update this assertion when fixed.
+    result = group_entries(location_vs_date_section_lines)
+    assert len(result) == 2  # buggy-but-current; should become 1 after the fix

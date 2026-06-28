@@ -13,6 +13,11 @@ def _norm(s: str) -> str:
 def section_f1(pred_types: list[str], gold_types: list[str]) -> dict:
     """F1 over the SET of section types found (order-independent)."""
     pred, gold = set(pred_types), set(gold_types)
+    # Empty/empty is a perfect (vacuous) match, not a 0.0 division-by-zero. This
+    # guard was added in Phase 3 (§2.4) so a label/parse that legitimately has no
+    # sections doesn't drag the mean F1 down to zero.
+    if not pred and not gold:
+        return {"precision": 1.0, "recall": 1.0, "f1": 1.0}
     tp = len(pred & gold)
     fp = len(pred - gold)
     fn = len(gold - pred)
