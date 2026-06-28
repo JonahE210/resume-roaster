@@ -1,7 +1,5 @@
-"""Bullet detection + ownership tests. Detection works now; ownership is Phase 2."""
-import pytest
-
-from app.parser.bullets import strip_marker
+"""Bullet detection + ownership tests. Ownership/merge are the headline metric."""
+from app.parser.bullets import assign_bullets, strip_marker
 
 
 def test_strip_marker():
@@ -10,11 +8,15 @@ def test_strip_marker():
     assert strip_marker("No marker here") == "No marker here"
 
 
-@pytest.mark.xfail(reason="Phase 2: attach bullets to nearest preceding entry")
-def test_bullet_ownership():
-    raise AssertionError("Bullets must attach to the correct entry; this is the headline metric.")
+def test_bullet_ownership(ownership_section_lines):
+    # Headers at indices 0 and 3; each owns the two bullets beneath it.
+    result = assign_bullets(ownership_section_lines, [0, 3], body_indent=72.0)
+    assert result[0] == ["A-one", "A-two"]
+    assert result[1] == ["B-one", "B-two"]
 
 
-@pytest.mark.xfail(reason="Phase 2: merge wrapped continuation lines into one bullet")
-def test_merges_wrapped_bullet_lines():
-    raise AssertionError("A bullet spanning two visual lines should be one string.")
+def test_merges_wrapped_bullet_lines(wrapped_bullet_lines):
+    result = assign_bullets(wrapped_bullet_lines, [0], body_indent=72.0)
+    assert len(result) == 1
+    assert len(result[0]) == 1
+    assert result[0][0] == "Built a system that handles requests"
