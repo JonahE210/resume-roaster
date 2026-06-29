@@ -56,3 +56,36 @@ def test_match_tech_no_substring_false_positive():
 def test_match_tech_empty():
     assert match_tech("") == []
     assert match_tech("   ") == []
+
+
+from app.scoring.bullets import score_bullet
+
+
+def test_score_bullet_returns_tech_keywords_and_flag():
+    out = score_bullet("Developed services with FastAPI and PostgreSQL")
+    assert out["mentions_tech"] is True
+    assert {"FastAPI", "PostgreSQL"} <= set(out["tech_keywords"])
+
+
+def test_score_bullet_no_tech():
+    out = score_bullet("Coordinated weekly planning meetings")
+    assert out["mentions_tech"] is False
+    assert out["tech_keywords"] == []
+
+
+def test_score_bullet_tech_only_scores_point_one():
+    # No strong lead verb, no metric, not vague, has tech -> 0.2 + 0.1 = 0.3.
+    out = score_bullet("Maintained Python and Django services")
+    assert out["score"] == 0.3
+
+
+def test_score_bullet_strong_full_score():
+    out = score_bullet("Built a scalable service in Python handling 10k requests")
+    assert out["score"] == 1.0
+
+
+def test_score_bullet_empty_does_not_crash():
+    out = score_bullet("")
+    assert out["score"] == 0.0
+    assert out["mentions_tech"] is False
+    assert out["tech_keywords"] == []
