@@ -113,3 +113,71 @@ def test_metric_decimal_with_unit_counted():
 
 def test_metric_thousands_with_unit_counted():
     assert score_bullet("Served 1,000 users daily")["has_metric"] is True
+
+
+from app.scoring.completeness import score_completeness
+from app.schemas.resume import Contact, Entry, Resume, Section, SectionType
+
+
+def _complete_resume() -> Resume:
+    return Resume(
+        contact=Contact(email="a@b.com", github="github.com/x"),
+        sections=[
+            Section(type=SectionType.education, raw_heading="EDUCATION",
+                    entries=[Entry(start_date="2019", end_date="2023",
+                                   bullets=["Graduated with honors"])]),
+            Section(type=SectionType.experience, raw_heading="EXPERIENCE",
+                    entries=[Entry(start_date="2023", end_date="2025",
+                                   bullets=["Built scalable services in Python"])]),
+            Section(type=SectionType.projects, raw_heading="PROJECTS",
+                    entries=[Entry(start_date="2024", end_date="2024",
+                                   bullets=["Shipped a CLI tool"])]),
+            Section(type=SectionType.skills, raw_heading="SKILLS",
+                    skills={"Languages": ["Python", "Java"]}),
+        ],
+    )
+
+
+def _incomplete_resume() -> Resume:
+    return Resume(
+        contact=Contact(),
+        sections=[
+            Section(type=SectionType.experience, raw_heading="EXPERIENCE",
+                    entries=[Entry(title="Intern")]),  # no dates, no bullets
+        ],
+    )
+
+
+def test_completeness_complete_scores_full():
+    out = score_completeness(_complete_resume())
+    assert out["score"] == 1.0
+    assert all(out["checks"].values())
+    assert out["date_coverage"]["ratio"] == 1.0
+    assert out["entries_without_bullets"] == 0
+
+
+def test_completeness_incomplete_low():
+    out = score_completeness(_incomplete_resume())
+    assert out["checks"]["has_email"] is False
+    assert out["checks"]["has_experience"] is True
+    assert out["date_coverage"]["ratio"] == 0.0
+    assert out["entries_without_bullets"] == 1
+
+
+def test_completeness_date_coverage_partial():
+    resume = Resume(sections=[
+        Section(type=SectionType.experience, raw_heading="EXPERIENCE", entries=[
+            Entry(title="A", start_date="2023", bullets=["x"]),
+            Entry(title="B", bullets=["y"]),
+        ]),
+    ])
+    out = score_completeness(resume)
+    assert out["date_coverage"]["entries_total"] == 2
+    assert out["date_coverage"]["entries_with_dates"] == 1
+    assert out["date_coverage"]["ratio"] == 0.5
+
+
+def test_completeness_section_bullet_counts():
+    out = score_completeness(_complete_resume())
+    assert out["section_bullet_counts"]["experience"] == 1
+    assert out["section_bullet_counts"]["skills"] == 0
