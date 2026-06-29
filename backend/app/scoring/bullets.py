@@ -15,7 +15,26 @@ STRONG_VERBS = {
     "engineered", "refactored", "deployed", "integrated", "migrated", "scaled",
 }
 WEAK_PHRASES = ("worked on", "helped with", "responsible for", "assisted", "various")
-METRIC = re.compile(r"\d+(\.\d+)?\s?(%|x|k|ms|s|users|hours|requests|qps)?", re.I)
+# A number "counts" as a metric if it carries a recognized unit, OR it is a bare
+# integer that is not a 4-digit year. Unit-less decimals (e.g. version "3.11") and
+# standalone years (e.g. "2021") are excluded as false positives.
+_NUM_WITH_UNIT = re.compile(
+    r"\d[\d,]*(?:\.\d+)?\s?"
+    r"(?:%|x|×|\+|k|m|b|ms|secs?|s|mins?|hrs?|hours?|days?|weeks?|months?|"
+    r"users?|customers?|clients?|requests?|qps|rps|gb|tb|mb|fps)(?!\w)",
+    re.I,
+)
+_BARE_INT = re.compile(r"(?<![\d.])\d{1,3}(?:,\d{3})*(?![\d.])")
+_YEAR = re.compile(r"^(?:19|20)\d{2}$")
+
+
+def _has_metric(text: str) -> bool:
+    if _NUM_WITH_UNIT.search(text):
+        return True
+    for m in _BARE_INT.finditer(text):
+        if not _YEAR.match(m.group().replace(",", "")):
+            return True
+    return False
 
 
 def score_bullet(text: str) -> dict:
@@ -25,7 +44,7 @@ def score_bullet(text: str) -> dict:
     first_word = words[0] if words else ""
 
     has_strong_verb = first_word in STRONG_VERBS
-    has_metric = bool(METRIC.search(text)) and any(c.isdigit() for c in text)
+    has_metric = _has_metric(text)
     is_vague = any(p in lower for p in WEAK_PHRASES)
     tech_keywords = match_tech(text)
     mentions_tech = bool(tech_keywords)

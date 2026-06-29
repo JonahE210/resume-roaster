@@ -89,3 +89,27 @@ def test_score_bullet_empty_does_not_crash():
     assert out["score"] == 0.0
     assert out["mentions_tech"] is False
     assert out["tech_keywords"] == []
+
+
+def test_metric_bare_year_not_counted():
+    assert score_bullet("Graduated in 2021 with honors")["has_metric"] is False
+
+
+def test_metric_version_number_not_counted():
+    assert score_bullet("Migrated the app to Python 3.11")["has_metric"] is False
+
+
+def test_metric_bare_count_counted():
+    assert score_bullet("Mentored 5 interns over the summer")["has_metric"] is True
+
+
+def test_metric_percent_counted():
+    assert score_bullet("Reduced latency by 40%")["has_metric"] is True
+
+
+def test_metric_decimal_with_unit_counted():
+    assert score_bullet("Improved uptime to 99.9% availability")["has_metric"] is True
+
+
+def test_metric_thousands_with_unit_counted():
+    assert score_bullet("Served 1,000 users daily")["has_metric"] is True
