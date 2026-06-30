@@ -1,0 +1,52 @@
+{
+  "contact": {
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "github": "github.com/janedoe"
+  },
+  "sections": [
+    {
+      "type": "experience",
+      "entries": [
+        {
+          "title": "Software Engineering Intern",
+          "organization": "FileByte LLC",
+          "location": "Los Angeles, CA",
+          "start_date": "May 2025",
+          "end_date": "Aug 2025",
+          "bullets": [
+            "Built reusable React components for the client dashboard",
+            "Integrated backend API endpoints and reduced load time"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "skills",
+      "skills": {
+        "languages": [
+          "Python",
+          "Java",
+          "TypeScript"
+        ],
+        "frameworks": [
+          "React",
+          "FastAPI"
+        ]
+      }
+    },
+    {
+      "type": "education",
+      "entries": [
+        {
+          "title": "B.S. Computer Science",
+          "organization": "State University",
+          "location": "Austin, TX",
+          "start_date": "2021",
+          "end_date": "2025",
+          "bullets": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,24 @@
 # Eval report
 
-Not generated yet. Add labeled samples and run `python run_eval.py`.
+| Sample | Section F1 | Entry acc | Bullet attr |
+|--------|-----------|-----------|-------------|
+| 001 | 1.00 | 1.00 | 1.00 |
+| 002 | 1.00 | 1.00 | 1.00 |
+| 003 | 1.00 | 1.00 | 1.00 |
+| 004 | 1.00 | 1.00 | 1.00 |
+| 005 | 1.00 | 1.00 | 1.00 |
+| 006 | 1.00 | 1.00 | 1.00 |
+| 007 | 1.00 | 1.00 | 1.00 |
+| 008 | 1.00 | 1.00 | 1.00 |
+| 009 | 1.00 | 1.00 | 1.00 |
+| 010 | 1.00 | 0.50 | 1.00 |
+| 011 | 1.00 | 1.00 | 1.00 |
+| 012 | 1.00 | 1.00 | 1.00 |
+| 013 | 1.00 | 1.00 | 1.00 |
+| **mean** | **1.00** | **0.96** | **1.00** |
+
+## Targets
+- Section F1: 1.00 vs 0.92 target -> PASS
+- Entry acc: 0.96 vs 0.90 target -> PASS
+- Bullet attr: 1.00 vs 0.90 target -> PASS
+- Weakest stage: Entry acc (0.96 vs 0.90)

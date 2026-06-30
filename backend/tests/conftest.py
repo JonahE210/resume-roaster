@@ -282,6 +282,25 @@ def bold_org_section_lines() -> list[Line]:
 
 
 @pytest.fixture
+def location_vs_date_section_lines() -> list[Line]:
+    """Header (title + right-aligned date) + org line with a right-aligned
+    LOCATION (big x-gap) + two bullets. The location's right-aligned run trips
+    the date-run boundary, so this currently mis-segments — a Phase 2 watch-item
+    tracked (not fixed) here."""
+    header = _line([
+        w("Software", 72, 100), w("Engineer", 140, 100),
+        w("May", 430, 100), w("2025", 470, 100),
+    ])
+    org = _line([
+        w("Google", 72, 115),
+        w("Mountain", 430, 115), w("View,", 485, 115), w("CA", 522, 115),
+    ])
+    bullet1 = _line([w("\u2022", 90, 130), w("Built", 100, 130), w("services", 135, 130)])
+    bullet2 = _line([w("\u2022", 90, 145), w("Improved", 100, 145), w("latency", 155, 145)])
+    return [header, org, bullet1, bullet2]
+
+
+@pytest.fixture
 def bold_two_jobs_section_lines() -> list[Line]:
     """Two BOLD job headers, each with its own right-aligned date and one
     bullet. These must still split via the date-run rule despite being bold."""

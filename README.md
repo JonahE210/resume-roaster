@@ -18,15 +18,23 @@ until the parser hits its accuracy target (see below).
 
 ## Parser accuracy (the pitch)
 
-Measured by `eval/run_eval.py` against the hand-labeled set in `eval/`.
+Measured by `eval/run_eval.py` against the labeled set in `eval/`.
 
 | Metric                     | Target | Current |
 |----------------------------|--------|---------|
-| Section detection (F1)     | ≥ 0.92 | TBD     |
-| Entry grouping (accuracy)  | ≥ 0.90 | TBD     |
-| Bullet attribution (acc)   | ≥ 0.90 | TBD     |
+| Section detection (F1)     | ≥ 0.92 | 1.00    |
+| Entry grouping (accuracy)  | ≥ 0.90 | 0.96    |
+| Bullet attribution (acc)   | ≥ 0.90 | 1.00    |
 
-> Fill this in from `eval/REPORT.md`. These numbers are the headline of the project.
+> Numbers are from **13 synthetic fixtures** (`eval/make_synthetic.py`) — 8 clean
+> single-column resumes plus 5 adversarial ones (inline metadata, under-segmented
+> one-liners, understated headings, non-standard bullet glyphs). Two parser fixes
+> this round took bullet attribution from 0.85 to 1.00: inline `Title | Org | Dates`
+> headers are now split down to the title, and non-standard markers (`»`, `‣`, …)
+> are recognized so they neither leak into bullet text nor mis-merge bullets.
+> Remaining weak spot: entry grouping (0.96) under-segments dateless, bulletless
+> one-liner entries (sample 010) — a documented "safer failure direction" limit.
+> Swap in real anonymized PDFs anytime; the harness scores both identically.
 
 ## Architecture
 

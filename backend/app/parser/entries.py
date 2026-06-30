@@ -11,6 +11,8 @@ A new entry begins when we see a new "header pattern":
 """
 from __future__ import annotations
 
+import re
+
 from app.parser import bullets, fields
 from app.parser.lines import detect_right_aligned_run
 from app.schemas.primitives import BBox, Line
@@ -18,6 +20,17 @@ from app.schemas.resume import Entry
 
 INDENT_TOL = 3.0
 EMPHASIS_FONT_RATIO = 1.1
+
+# Vertical/dot separators used in inline "Title | Org | Dates" headers (NOT the
+# hyphen, which is a date-range separator). Used only when the header has no
+# right-aligned run to split off, so a clean title isn't re-cut.
+INLINE_SEP = re.compile(r"\s*[|•·∙‧⋅▸›»]\s*")
+
+
+def _clean_inline_title(text: str) -> str:
+    """Keep the first segment of an inline header as the title."""
+    head = INLINE_SEP.split(text, maxsplit=1)[0].strip()
+    return head or text
 
 
 def _line_font(line: Line) -> float | None:
@@ -94,6 +107,12 @@ def group_entries(
     for i, line in enumerate(section_lines):
         if kinds[i] == "TEXT":
             run = detect_right_aligned_run(line)
+            # Only a right-aligned DATE run marks a new header. A right-aligned
+            # LOCATION (e.g. "Mountain View, CA" on an org line) also forms a run
+            # but must NOT open a new entry — that mis-split the org line into a
+            # fake entry and stole its bullets (the headline metric).
+            run_text_i = " ".join(x.text for x in run) if run else ""
+            run_is_date = bool(run) and fields.find_date_range(run_text_i)[0] is not None
             lf = _line_font(line)
             emphasized = abs(line.bbox.x0 - base_indent) <= INDENT_TOL and (
                 any(w.bold for w in line.words)
@@ -105,14 +124,14 @@ def group_entries(
             )
             boundary = (
                 i == 0
-                or run is not None  # rule 2: own right-aligned date run
+                or run_is_date  # rule 2: own right-aligned date run
                 or prev_kind in ("BULLET", "CONTINUATION")  # rule 3: out of a bullet block
             )
             if boundary:
                 entry_starts.append(i)
                 # emphasis still informs confidence but NEVER creates a boundary.
                 entry_signals.append(
-                    run is not None
+                    run_is_date
                     or prev_kind in ("BULLET", "CONTINUATION")
                     or emphasized
                 )
@@ -140,6 +159,10 @@ def group_entries(
 
         run, body_text, run_text = _run_split(header)
         title = body_text or None
+        # No right-aligned run means an inline header — strip any "| Org | Dates"
+        # tail so the title is just the role (keeps bullet attribution keyed right).
+        if run is None and title:
+            title = _clean_inline_title(title)
 
         start_date = end_date = None
         if run_text:
@@ -152,11 +175,17 @@ def group_entries(
             for j in range(start_i + 1, end_i)
             if kinds[j] == "TEXT"
         ]
-        organization = secondary[0].text if secondary else None
-
+        # The org line often carries a right-aligned location ("Google   City, ST");
+        # split off that run so `organization` isn't polluted with the location.
+        organization = None
         location = fields.find_location(run_text) if run_text else None
-        if location is None and secondary:
-            location = fields.find_location(secondary[0].text)
+        if secondary:
+            _, org_body, sec_run_text = _run_split(secondary[0])
+            organization = org_body or secondary[0].text or None
+            if location is None:
+                location = fields.find_location(sec_run_text) or fields.find_location(
+                    secondary[0].text
+                )
 
         confidence = 1.0
         if not entry_signals[e]:

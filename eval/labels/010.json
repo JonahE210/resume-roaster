@@ -1,0 +1,41 @@
+{
+  "contact": {
+    "name": "Leo Fontaine",
+    "email": "leo@fontaine.dev",
+    "github": "github.com/leof"
+  },
+  "sections": [
+    {
+      "type": "experience",
+      "entries": [
+        {
+          "title": "Software Engineer",
+          "organization": "Hatch",
+          "location": "Chicago, IL",
+          "start_date": "Jul 2021",
+          "end_date": "Present",
+          "bullets": [
+            "Owned the notifications subsystem end to end"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "awards",
+      "entries": [
+        {
+          "title": "Hackathon Winner 2022",
+          "bullets": []
+        },
+        {
+          "title": "Dean's List",
+          "bullets": []
+        },
+        {
+          "title": "Best Capstone Project",
+          "bullets": []
+        }
+      ]
+    }
+  ]
+}

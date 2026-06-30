@@ -1,0 +1,52 @@
+{
+  "contact": {
+    "name": "Tom Becker",
+    "email": "tom@becker.dev",
+    "github": "github.com/tbecker"
+  },
+  "sections": [
+    {
+      "type": "experience",
+      "entries": [
+        {
+          "title": "Machine Learning Engineer",
+          "organization": "VisionAI",
+          "location": "San Jose, CA",
+          "start_date": "Aug 2021",
+          "end_date": "Present",
+          "bullets": [
+            "Trained a detection model improving recall by 12 points",
+            "Deployed inference to edge devices with ONNX"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "leadership",
+      "entries": [
+        {
+          "title": "ACM Chapter President",
+          "organization": "State University",
+          "start_date": "2020",
+          "end_date": "2021",
+          "bullets": [
+            "Organized a 200-person hackathon"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "skills",
+      "skills": {
+        "languages": [
+          "Python",
+          "C++"
+        ],
+        "frameworks": [
+          "PyTorch",
+          "TensorFlow"
+        ]
+      }
+    }
+  ]
+}

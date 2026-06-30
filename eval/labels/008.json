@@ -1,0 +1,32 @@
+{
+  "contact": {
+    "name": "Omar Said",
+    "email": "omar@said.io",
+    "github": "github.com/osaid"
+  },
+  "sections": [
+    {
+      "type": "experience",
+      "entries": [
+        {
+          "title": "Junior Developer",
+          "organization": "Webworks",
+          "start_date": "2024",
+          "end_date": "Present",
+          "bullets": [
+            "Maintained a Django monolith and added test coverage"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "skills",
+      "skills": {
+        "languages": [
+          "Python",
+          "JavaScript"
+        ]
+      }
+    }
+  ]
+}

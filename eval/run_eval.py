@@ -19,6 +19,9 @@ EVAL_DIR = Path(__file__).parent
 SAMPLES = EVAL_DIR / "samples"
 LABELS = EVAL_DIR / "labels"
 
+# Accuracy targets (the pitch). Used for the weakest-stage summary.
+TARGETS = {"Section F1": 0.92, "Entry acc": 0.90, "Bullet attr": 0.90}
+
 
 def _load_parser():
     sys.path.insert(0, str(EVAL_DIR.parent / "backend"))
@@ -71,20 +74,53 @@ def main() -> int:
             print(f"skip {label_path.name}: no matching {sample.name}")
             continue
         label = json.loads(label_path.read_text())
-        result = parse_resume(sample.read_bytes())
 
-        p_types, p_counts, p_bullets = _pred_to_compare_shapes(result)
-        g_types, g_counts, g_bullets = _gold_to_compare_shapes(label)
+        # Per-sample isolation: one malformed PDF/label must never abort the
+        # batch. A failure records a zero-scored row and keeps going.
+        try:
+            result = parse_resume(sample.read_bytes())
+            p_types, p_counts, p_bullets = _pred_to_compare_shapes(result)
+            g_types, g_counts, g_bullets = _gold_to_compare_shapes(label)
 
-        f1 = metrics.section_f1(p_types, g_types)["f1"]
-        ea = metrics.entry_grouping_accuracy(p_counts, g_counts)
-        ba = metrics.bullet_attribution_accuracy(p_bullets, g_bullets)
+            f1 = metrics.section_f1(p_types, g_types)["f1"]
+            ea = metrics.entry_grouping_accuracy(p_counts, g_counts)
+            ba = metrics.bullet_attribution_accuracy(p_bullets, g_bullets)
+        except Exception as exc:  # noqa: BLE001 - keep the batch alive
+            print(f"error {label_path.stem}: {exc}")
+            f1 = ea = ba = 0.0
+
         f1s.append(f1); entry_accs.append(ea); bullet_accs.append(ba)
         rows.append((label_path.stem, f1, ea, ba))
 
     _write_report(rows, f1s, entry_accs, bullet_accs)
+    if rows:
+        summary = _summarize(f1s, entry_accs, bullet_accs)
+        with (EVAL_DIR / "REPORT.md").open("a") as fh:
+            fh.write("\n".join(summary) + "\n")
+        for line in summary:
+            print(line)
     print(f"Done. {len(rows)} samples. See REPORT.md")
     return 0
+
+
+def _summarize(f1s: list[float], entry_accs: list[float], bullet_accs: list[float]) -> list[str]:
+    """Compare the three means to targets; flag PASS/BELOW TARGET and name the
+    weakest stage (largest target-minus-mean shortfall) to drive the 2<->3 loop."""
+    means = {
+        "Section F1": mean(f1s),
+        "Entry acc": mean(entry_accs),
+        "Bullet attr": mean(bullet_accs),
+    }
+    lines = ["", "## Targets"]
+    for name, target in TARGETS.items():
+        m = means[name]
+        status = "PASS" if m >= target else "BELOW TARGET"
+        lines.append(f"- {name}: {m:.2f} vs {target:.2f} target -> {status}")
+    weakest = max(TARGETS, key=lambda n: TARGETS[n] - means[n])
+    lines.append(
+        f"- Weakest stage: {weakest} ({means[weakest]:.2f} vs {TARGETS[weakest]:.2f})"
+    )
+    return lines
 
 
 def _write_report(rows, f1s, entry_accs, bullet_accs) -> None:

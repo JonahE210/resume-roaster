@@ -1,0 +1,49 @@
+{
+  "contact": {
+    "name": "Marcus Webb",
+    "email": "mwebb@school.edu",
+    "github": "github.com/mwebb"
+  },
+  "sections": [
+    {
+      "type": "education",
+      "entries": [
+        {
+          "title": "M.S. Computer Engineering",
+          "organization": "Tech Institute",
+          "location": "Boston, MA",
+          "start_date": "2022",
+          "end_date": "2024",
+          "bullets": [
+            "GPA 3.9; focus in distributed systems"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "experience",
+      "entries": [
+        {
+          "title": "Research Assistant",
+          "organization": "Systems Lab",
+          "start_date": "Sep 2022",
+          "end_date": "May 2024",
+          "bullets": [
+            "Built a fault-tolerant consensus simulator in Rust",
+            "Co-authored a paper on Raft optimizations"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "skills",
+      "skills": {
+        "languages": [
+          "Rust",
+          "C++",
+          "Python"
+        ]
+      }
+    }
+  ]
+}

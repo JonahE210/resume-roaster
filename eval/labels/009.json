@@ -1,0 +1,33 @@
+{
+  "contact": {
+    "name": "Dana Kim",
+    "email": "dana.kim@mail.com",
+    "github": "github.com/danakim"
+  },
+  "sections": [
+    {
+      "type": "experience",
+      "entries": [
+        {
+          "title": "Software Engineer",
+          "organization": "Acme Corp",
+          "start_date": "2021",
+          "end_date": "2023",
+          "bullets": [
+            "Built an internal analytics service used company-wide",
+            "Reduced deploy time from 30 to 6 minutes"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "skills",
+      "skills": {
+        "languages": [
+          "Python",
+          "Go"
+        ]
+      }
+    }
+  ]
+}
